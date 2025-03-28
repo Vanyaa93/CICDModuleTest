@@ -22,7 +22,6 @@ def temp_text_file():
     ("SingleWord", (1, 1)),
 ])
 def test_count_words_and_sentences(temp_text_file, text, expected):
-    """Перевірка підрахунку слів та речень."""
     file_path = temp_text_file(text)
     result = count_words_and_sentences(file_path)
     assert result == expected
