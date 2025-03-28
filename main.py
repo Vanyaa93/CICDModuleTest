@@ -1,34 +1,47 @@
-import re
-
-
 def count_words_and_sentences(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
-        text = file.read()
+        text = file.read().strip()
 
     sentence_endings = {'.', '!', '?'}
     word_delimiters = {' ', ',', ':', ';', '\n'}
 
+    # Видаляємо зайві пробіли
+    cleaned_text = ''
+    prev_char = ''
+    for char in text:
+        if char in word_delimiters and prev_char in word_delimiters:
+            continue
+        cleaned_text += char
+        prev_char = char
+
     # Розбиваємо на слова
     words = []
     word = ''
-    for char in text:
+    for char in cleaned_text:
         if char not in word_delimiters:
             word += char
         else:
             if word:
                 words.append(word)
                 word = ''
-    if word:  # Додаємо останнє слово, якщо таке є
+    if word:
         words.append(word)
 
     words_count = len(words)
 
     # Рахуємо речення
-    sentences_count = sum(1 for i, char in enumerate(text)
-                          if char in sentence_endings and text[i:i + 3] != '...')
+    sentences_count = 0
+    i = 0
+    while i < len(cleaned_text):
+        if cleaned_text[i] in sentence_endings:
+            if i + 2 < len(cleaned_text) and cleaned_text[i:i + 3] == '...':
+                i += 2
+                continue
+            sentences_count += 1
+        i += 1
 
     # Перевіряємо, чи є останнє речення без кінцевого знака
-    if text and text[-1] not in sentence_endings and words_count > 0:
+    if cleaned_text and cleaned_text[-1] not in sentence_endings and words_count > 0:
         sentences_count += 1
 
     return words_count, sentences_count
